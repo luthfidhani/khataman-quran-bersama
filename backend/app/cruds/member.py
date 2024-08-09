@@ -3,7 +3,7 @@ from app import models, schemas
 from app.utils import generate_short_uuid, get_current_datetime
 
 
-def get_member(db: Session):
+def get_members(db: Session):
     return db.query(models.Member).filter(models.Member.is_delete == False).all()
 
 
