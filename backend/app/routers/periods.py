@@ -52,7 +52,7 @@ def update_period(
     return result
 
 
-@router.post("/{period_id}/lock", status_code=status.HTTP_200_OK)
+@router.get("/{period_id}/lock", status_code=status.HTTP_200_OK)
 def lock_period(period_id: str, db: Session = Depends(get_db)):
     result = crud.lock_period(db, period_id)
     if not result:

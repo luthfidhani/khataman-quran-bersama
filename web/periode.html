@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{ header: '', navbar: ''  }" x-init="
+    fetch('templates/header.html').then(response => response.text()).then(text => header = text);
+    fetch('templates/navbar.html').then(response => response.text()).then(text => navbar = text);
+">
+
+<head x-html="header"></head>
+
+<body>
+    <div id="app">
+        <div x-html="navbar"></div>
+        <div class="container" x-data="app" x-init="loadPeriods()">
+            <h1 class="mt-5">🪄 Periode</h1>
+
+            <div x-show="alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <div class="fs-5" x-text="alert"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="d-flex align-items-center">
+                <strong x-show="loading" role="status">Sabar ya gess</strong>
+                <div x-show="loading" class="spinner-border ms-auto" aria-hidden="true"></div>
+            </div>
+
+            <div>
+                <table class="table table-striped my-5">
+                    <tbody>
+                            <template x-for="(period, index) in periods" :key="index">
+                            <tr class="fs-4">
+                                <th scope="row" x-text="index + 1"></th>
+                                <td x-text="period.name"></td>
+                            </tr>
+                        </template>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-warning btn-lg rounded-pill" data-bs-toggle="modal"
+                data-bs-target="#newPeriod">
+                Periode Baru 📅
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="newPeriod" tabindex="-1" aria-labelledby="newPeriodLabel" aria-hidden="true"
+                x-init="loadMembers()">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="newPeriodLabel">Periode Baru 📅</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control rounded-pill" id="input-period" placeholder="">
+                                <label for="input-period">Nama Periode</label>
+                            </div>
+                            <template x-for="(member, index) in members" :key="index">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control rounded-pill" id="input_member_name"
+                                                disabled x-bind:value="member.name" required>
+                                            <label for="input_member_name">🤵</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control rounded-pill"
+                                                x-bind:id="`input_juz`+member.id" placeholder="1-6" value="">
+                                            <label for="`input_juz`+member.id">Juz</label>
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control rounded-pill visually-hidden"
+                                        x-bind:id="`input_member_id`+member.id" disabled placeholder=""
+                                        x-bind:value="member.id">
+                                </div>
+
+                            </template>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn fs-5 btn-secondary rounded-pill mx-4"
+                                data-bs-dismiss="modal">❌ Tutup</button>
+                            <button type="button" class="btn fs-5 btn-primary rounded-pill" data-bs-dismiss="modal"
+                                x-on:click="createPeriod()">💾 Simpan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- <div x-html="footer"></div> -->
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        
+    </script>
+</body>
+
+</html>

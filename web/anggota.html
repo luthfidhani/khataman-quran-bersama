@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{ header: '', navbar: ''  }" x-init="
+    fetch('templates/header.html').then(response => response.text()).then(text => header = text);
+    fetch('templates/navbar.html').then(response => response.text()).then(text => navbar = text);
+">
+
+<head x-html="header"></head>
+
+<body>
+    <div id="app">
+        <div x-html="navbar"></div>
+        <div class="container" x-data="app" x-init="loadMembers()">
+            <h1 class="mt-5">🤼 Anggota</h1>
+
+            <!-- Alert -->
+            <div x-show="alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <div class="fs-5" x-text="alert"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Loading -->
+            <div class="d-flex align-items-center">
+                <strong x-show="loading" role="status">Sabar ya gess</strong>
+                <div x-show="loading" class="spinner-border ms-auto" aria-hidden="true"></div>
+            </div>
+
+
+            <table class="table table-striped my-5">
+                <tbody>
+                    <template x-for="(member, index) in members" :key="index">
+                        <tr class="fs-4">
+                            <th scope="row" x-text="index + 1"></th>
+                            <td class="" x-text="member.name"></td>
+                            <td><a style="text-decoration: none" href="#" data-bs-toggle="modal"
+                                    x-on:click="selectedMemberId = member.id; selectedMemberName = member.name"
+                                    data-bs-target="#updateModel">📝</a></td>
+                            <td><a style="text-decoration: none" href="#" data-bs-toggle="modal"
+                                    x-on:click="selectedMemberId = member.id; selectedMemberName = member.name"
+                                    data-bs-target="#deleteModel">🗑️</a></td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+
+            <!-- Modal untuk update member -->
+            <div class="modal fade" id="updateModel" tabindex="-1" aria-labelledby="updateModelLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="updateModelLabel">Ubah data</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-floating">
+                                <input type="email" class="form-control rounded-pill" id="floatingInputValue"
+                                    x-bind:value="selectedMemberName" x-model="memberNameUpdate">
+                                <label for="floatingInputValue">Nama</label>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary rounded-pill"
+                                data-bs-dismiss="modal">Tidak</button>
+                            <button type="button" class="btn btn-primary rounded-pill" data-bs-dismiss="modal"
+                                x-on:click="updateMember()">Simpan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal untuk hapus member -->
+            <div class="modal fade" id="deleteModel" tabindex="-1" aria-labelledby="deleteModelLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="deleteModelLabel">
+                                <span>Ingin menghapus </span><span x-text="selectedMemberName"></span>?
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary rounded-pill"
+                                data-bs-dismiss="modal">Tidak</button>
+                            <button type="button" class="btn btn-danger rounded-pill" data-bs-dismiss="modal"
+                                x-on:click="deleteMember(selectedMemberId)">Ya</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-warning btn-lg rounded-pill" data-bs-toggle="modal"
+                data-bs-target="#exampleModal">
+                Tambah Anggota 🧑‍🌾
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Anggota 🧑‍🌾</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control rounded-pill" id="floatingInput"
+                                    x-model="newMemberName" placeholder="">
+                                <label for="floatingInput">Nama</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary rounded-pill"
+                                data-bs-dismiss="modal">Tutup</button>
+                            <button type="button" class="btn btn-primary rounded-pill" data-bs-dismiss="modal"
+                                x-on:click="addMember()">Simpan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <span class="d-block mb-2"></span>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

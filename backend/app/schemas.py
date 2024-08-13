@@ -48,8 +48,8 @@ class PeriodUpdate(BaseModel):
     is_done: bool = False
 
 
-class Period(PeriodBase):
-    id: str
+class Period(PeriodBase, PeriodUpdate):
+    pass
 
 
 class NumberStatus(BaseModel):
@@ -69,4 +69,4 @@ class PeriodDetail(UpdatePeriodRequest):
     can_update: bool
     can_lock: bool
     is_done: bool
-    period: str = "current"
+    period: str

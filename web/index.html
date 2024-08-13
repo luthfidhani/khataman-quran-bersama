@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{ header: '', navbar: ''  }" x-init="
+    fetch('templates/header.html').then(response => response.text()).then(text => header = text);
+    fetch('templates/navbar.html').then(response => response.text()).then(text => navbar = text);
+">
+
+<head x-html="header"></head>
+
+<body>
+    <div id="app">
+        <div x-html="navbar"></div>
+        <div class="container" x-data="app" x-init="loadPeriods(),loadChecklist()">
+            <h1 class="mt-5">📊 Checklist</h1>
+
+            <!-- Alert -->
+            <div x-show="alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <div class="fs-5" x-text="alert"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Loading -->
+            <div class="d-flex align-items-center">
+                <strong x-show="loading" role="status">Sabar ya gess</strong>
+                <div x-show="loading" class="spinner-border ms-auto" aria-hidden="true"></div>
+            </div>
+
+            <select class="form-select my-5 rounded-pill" aria-label="Default select example"
+                x-on:change="loadChecklist($event.target.value)">
+                <template x-for="(period, index) in periods" :key="index">
+                    <option :selected="detailPeriod.period == period.id" :value="period.id" x-text="period.name">
+                    </option>
+                </template>
+            </select>
+
+            <!-- Checklist -->
+            <template x-for="(checklist, index) in detailPeriod.data" :key="index">
+                <div class="mb-5">
+                    <div class="fs-3" x-text="checklist[0].name"></div>
+                    <div class="row">
+                        <template x-for="(juz, index) in checklist[1].juz" :key="index">
+                            <div class="col-sm-2">
+                                <div class="form-check fs-5">
+                                    <input class="form-check-input" type="checkbox" x-bind:value="juz.status"
+                                        x-bind:id="'juz_status'+juz.number">
+                                    <label class="form-check-label" x-bind:for="'juz_status'+juz.number"
+                                        x-text="'Juz '+juz.number"></label>
+
+                                    <!-- Hidden input -->
+                                    <input class="form-control visually-hidden" type="text" x-bind:value="juz.number"
+                                        x-bind:id="'juz_number'+juz.number">
+                                    <input class="form-control visually-hidden" type="text"
+                                        x-bind:value="checklist[0].id" x-bind:id="'member_id'+checklist[0].id">
+                                    <input class="form-control visually-hidden" type="text"
+                                        x-bind:value="checklist[0].name" x-bind:id="'member_name'+checklist[0].id">
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+            <div class="d-flex justify-content-between mb-5">
+                <button x-show="detailPeriod.can_update" type="button"
+                    class="btn btn-success rounded-pill btn-lg"
+                    x-on:click="updateChecklist(detailPeriod.period)">💾 Simpan</button>
+            
+                <button x-show="detailPeriod.can_lock" type="button"
+                    class="btn btn-danger rounded-pill btn-lg"
+                    x-on:click="lockPeriod(detailPeriod.period)">🔐 Kunci</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div x-html="footer"></div> -->
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+
+    </script>
+</body>
+
+</html>

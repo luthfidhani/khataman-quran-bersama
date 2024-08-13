@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
 from typing import List, Union
 from app import models, schemas
 from app.utils import generate_short_uuid, get_current_datetime
@@ -14,7 +15,12 @@ def get_period_detail(db: Session, period_id=None):
     if period_id is not None:
         query = query.filter(models.Period.id == period_id)
     else:
-        query = query.filter(models.Period.is_done == False)
+        # Subquery untuk mendapatkan tanggal `created_at` terbaru
+        subquery = (
+            db.query(func.max(models.Period.created_at))
+            .scalar_subquery()
+        )
+        query = query.filter(models.Period.created_at == subquery)
 
     results = query.all()
 
@@ -35,7 +41,7 @@ def get_period_detail(db: Session, period_id=None):
         can_update=results[0].period.can_update,
         can_lock=results[0].period.can_lock,
         is_done=results[0].period.is_done,
-        period=str(period_id) if period_id is not None else "current",
+        period=results[0].period.id,
         data=data,
     )
 
@@ -75,24 +81,28 @@ def update_period(
         completes.append(True if all(status == True for status in statuses) else False)
         db_period = (
             db.query(models.Checklist)
-            .filter(models.Period.id == period_id)
-            .filter(models.Member.id == member.id)
+            .filter(models.Checklist.member_id == member.id)
+            .filter(models.Checklist.period_id == period_id)
             .first()
         )
+
         if not db_period:
             return None
-        db_period.juz = juzs
+
+        # db_period.juz = juzs
         db_period.checklist = statuses
         db_period.updated_at = get_current_datetime()
         db.commit()
         db.refresh(db_period)
+
+    db_period = (
+        db.query(models.Period).filter(models.Period.id == period_id).first()
+    )
+    db_period.can_lock = False
     if all(complete == True for complete in completes):
-        db_period = (
-            db.query(models.Period).filter(models.Period.id == period_id).first()
-        )
         db_period.can_lock = True
-        db.commit()
-        db.refresh(db_period)
+    db.commit()
+    db.refresh(db_period)
 
     return get_period_detail(db, period_id)
 
